@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -42,6 +44,7 @@ import de.greenrobot.event.EventBus;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
+
 public class GcmDemoFragment extends DemoBaseFragment implements
       View.OnClickListener {
 
@@ -53,6 +56,7 @@ public class GcmDemoFragment extends DemoBaseFragment implements
    private TextView mTxtRegId;
    private TextView mTxtMsg;
    private State mState = State.UNREGISTERED;
+   private String[] my_msg_list={"hello","world", "cse","110","software","engineering"};
 
    public static GcmDemoFragment newInstance() {
       return new GcmDemoFragment();
@@ -202,9 +206,10 @@ public class GcmDemoFragment extends DemoBaseFragment implements
    }
 
    private void sendMessage() {
-      Intent msgIntent = new Intent(getActivity(), GcmIntentService.class);
-      msgIntent.setAction(Constants.ACTION_ECHO);
-      String msg;
+
+      //String msg="";
+
+      /*
       if (!TextUtils.isEmpty(mTxtMsg.getText())) {
          msg = mTxtMsg.getText().toString();
          mTxtMsg.setText("");
@@ -212,10 +217,44 @@ public class GcmDemoFragment extends DemoBaseFragment implements
       else {
          msg = getActivity().getString(R.string.no_message);
       }
-      String msgTxt = getString(R.string.msg_sent, msg);
-      Crouton.showText(getActivity(), msgTxt, Style.INFO);            
-      msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, msg);
-      getActivity().startService(msgIntent);
+      */
+      /*
+      for (final String cur_msg : my_msg_list) {
+         Intent msgIntent = new Intent(getActivity(), GcmIntentService.class);
+         msgIntent.setAction(Constants.ACTION_ECHO);
+         mTxtMsg.setText("");
+         String msgTxt = getString(R.string.msg_sent, cur_msg);
+         Crouton.showText(getActivity(), msgTxt, Style.INFO);
+         msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, cur_msg);
+         getActivity().startService(msgIntent);
+         try {
+            Thread.sleep(10000);                 //1000 milliseconds is one second.
+         } catch(InterruptedException ex) {
+            Thread.currentThread().interrupt();
+         }
+      }*/
+
+      for (final String cur_msg : my_msg_list) {
+         new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+               Intent msgIntent = new Intent(getActivity(), GcmIntentService.class);
+               msgIntent.setAction(Constants.ACTION_ECHO);
+               mTxtMsg.setText("");
+               String msgTxt = getString(R.string.msg_sent, cur_msg);
+               Crouton.showText(getActivity(), msgTxt, Style.INFO);
+               msgIntent.putExtra(Constants.KEY_MESSAGE_TXT, cur_msg);
+               getActivity().startService(msgIntent);
+
+            }
+         }.start();
+
+      }
    }
 
     /**
